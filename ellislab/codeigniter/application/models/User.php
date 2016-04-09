@@ -64,7 +64,7 @@ class User extends CI_Model
      * @param string $email, string $password, string $name, string $surname 
      * Creates random string using solution found on stackoverflow, and then hashes it with sha256. Afterwards concatenates password 
      * with salt and hashes it again with sha256 and stores it, with all additional data in database. 
-     * @return boolean
+     * @return int
      */
     
     public function addUser($email, $password, $name, $surname)
@@ -74,16 +74,11 @@ class User extends CI_Model
       $this->surname = $surname;
       $this->salt     = hash("sha256", $this->randomSeed());
       $this->password = hash("sha256", $password . $this->salt);
-      
-      try {
-        $result = $this->db->insert("Users", $this);
-
-        if(empty($result) ){
-          throw new Exception('no data returned');
-        }
-       $result = $this->db->insert_id();
-      } catch (Exception $e) {
+      $result = $this->db->insert("Users", $this);
+      if(empty($result)){
         $result = "Duplicate email";
+      }else{
+        $result = $this->db->insert_id();
       }
       return $result;
     }
