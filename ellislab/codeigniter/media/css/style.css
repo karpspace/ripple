@@ -1,0 +1,56 @@
+body {
+  background: url(../img/bgapp.jpg);
+  font-family: 'Lato', sans-serif;
+  padding-top: 20px; }
+
+.pages a {
+  font-size: 15px;
+  margin-left: 10px; }
+
+.menu ul li {
+  display: inline-block;
+  list-style: none;
+  padding: 10px; }
+  .menu ul li a {
+    color: white; }
+    .menu ul li a:hover {
+      color: lightblue; }
+
+.window {
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 20px;
+  text-align: left; }
+  .window p {
+    font-size: 15px; }
+  .window h2 {
+    font-family: 'Lato', sans-serif; }
+
+.company {
+  font-size: 10px;
+  color: white; }
+  .company label {
+    color: white; }
+
+.contacts, .companies {
+  font-size: 10px; }
+  .contacts label, .companies label {
+    color: white; }
+
+.searchField {
+  padding: 0px;
+  margin: 0px;
+  font-size: inherit;
+  height: auto; }
+
+.editField {
+  padding: 3px;
+  margin: 0px;
+  font-size: 12px;
+  height: 20px;
+  width: 60%; }
+
+.editLabel {
+  padding: 1px !important;
+  margin: 0px !important; }
+
+/*# sourceMappingURL=style.css.map */

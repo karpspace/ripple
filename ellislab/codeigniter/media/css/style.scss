@@ -1,0 +1,89 @@
+	body{
+	background: url(../img/bgapp.jpg);
+	font-family: 'Lato', sans-serif;
+	padding-top: 20px;
+}
+
+.main{
+	 
+}
+.pages{
+	a{
+	font-size: 15px;
+	margin-left:10px;	
+	}
+	
+}
+.menu{
+
+	ul{
+		li{
+			display: inline-block;
+			list-style: none;
+		
+			padding: 10px;
+			a{
+					color:white;
+					&:hover{
+						color:lightblue;
+					}
+			}
+		}
+	}
+}
+
+
+.searchBar{
+	//	background-color: rgab(255,255,255)
+}
+
+
+
+.window{
+	background-color: rgba(255,255,255,0.3);
+	padding: 20px;
+	text-align: left;
+	p{
+		font-size: 15px;
+	}
+	
+	h2{
+		font-family: 'Lato', sans-serif;
+	}
+}
+
+.company{
+		font-size: 10px;
+	color:white;
+	label{
+		color: white;
+	}
+}
+
+.contacts,.companies{
+	font-size: 10px;
+	label{
+		color: white;
+	}
+}
+
+.searchField{
+		padding: 0px;
+		margin:0px;
+		font-size: inherit;
+		height: auto;
+	}
+
+.editField{
+		padding: 3px;
+		margin:0px;
+		font-size: 12px;
+		height: 20px; 
+		width:60%;
+}
+
+.editLabel{
+	padding: 1px !important;
+	margin: 0px !important;
+}
+

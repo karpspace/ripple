@@ -23,13 +23,13 @@ class UnitTest extends CI_Controller {
 
 
 		//Get Users Test
-		$getUsersTest = $this->User->getUsers();
+		$getUsersTest = $this->User->getUsers(1,0);
 		$testName = 'Get Users Test';
-		$this->unit->run($getUsersTest, 'is_object', $testName);
+		$this->unit->run($getUsersTest, 'is_array', $testName);
 
 
 		//Create User Test
-		$createUserTest = $this->User->addUser("user@user1.com".$rand, "password", "John", "Smith");
+		$createUserTest = $this->User->addUser(array("email"=> "user@user1.com".$rand, "password" =>"password", "name" => "John","surname" => "Smith"));
 		$testName = 'Create User Test';
 		$this->unit->run($createUserTest, "is_int", $testName, $createUserTest);
 
@@ -50,7 +50,7 @@ class UnitTest extends CI_Controller {
 		$this->unit->run($getUserTest->email,"user@user1.com".$rand, $testName,$getUserTest->email);
 		
 		///Update User
-		$updateUserTest = $this->User->updateUser($createUserTest,false, false, false,"password2");
+		$updateUserTest = $this->User->updateUser(array("id"=>$createUserTest,"email"=> "user@user1.com".$rand, "password" =>"password2", "name" => "John","surname" => "Smith"));
 		$testName = 'Update User Test';
 		$this->unit->run($updateUserTest, true, $testName,$updateUserTest);
 
@@ -76,7 +76,15 @@ class UnitTest extends CI_Controller {
 
 		//Add Company test
 
-		$addCompanyTest = $this->Company->addCompany("Test Company".$rand, "TCOMP".$rand,"",86,87);
+		$addCompanyTest = $this->Company->addCompany(
+			array(
+			"companyName" =>"Test Company".$rand,
+			"ref" => "TCOMP".$rand,
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			)
+		);
 		$testName = 'Add Company Test';
 		$this->unit->run($addCompanyTest, "is_numeric", $testName, $addCompanyTest);
 
@@ -84,27 +92,31 @@ class UnitTest extends CI_Controller {
 		//Get Company Test
 		$getCompanyTest = $this->Company->getCompany($addCompanyTest);
 		$testName = 'Get Company Test';
-		$this->unit->run($getCompanyTest->companyName, "Test Company".$rand, $testName, $getCompanyTest->emergencyContactName);
+		$this->unit->run($getCompanyTest->companyName, "is_string", $testName);
 
 		//Get Companies Test
-		$getCompaniesTest = $this->Company->getCompanies($addCompanyTest);
+		$getCompaniesTest = $this->Company->getCompanies(1,0);
 		$testName = 'Get Companies Test';
 		$this->unit->run($getCompaniesTest, 'is_array', $testName, count($getCompaniesTest));
 
 		//Update Company Test
-		$this->Company->updateCompany($addCompanyTest,"Test Company-2-".$rand,"TCO-MP2","Lorem Ipsum");
+		$this->Company->updateCompany(array(
+			"id" =>$addCompanyTest,
+			"companyName" =>"132",
+			"ref" => "113",
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0));
 		$updateCompanyTest = $this->Company->getCompany($addCompanyTest);
 		$testName = 'Update Companies Test';
 		$this->unit->run(
 			array(
 				$updateCompanyTest->companyName,
 				$updateCompanyTest->ref,
-				$updateCompanyTest->natureOfBusiness
 			),
 			array(
-				"Test Company-2-".$rand,
-				"TCO-MP2",
-				"Lorem Ipsum"
+				"132",
+				"113"
 			), 
 			$testName,
 			$updateCompanyTest->companyName." ".$updateCompanyTest->ref." ".$updateCompanyTest->natureOfBusiness
@@ -118,10 +130,16 @@ class UnitTest extends CI_Controller {
 		//Single result search Company Test 
 		$testResults = array();
 		
-		$astroOneId = $this->Company->addCompany("Astro One", "A1");
-		$testResults['Name'] = $this->Company->searchCompany("Astro One");
-		$testResults['Ref']  = $this->Company->searchCompany("", "A1");
-		$testResults['Both'] = $this->Company->searchCompany("Astro One", "A1");
+		$astroOneId = $this->Company->addCompany( array(
+			"companyName" =>"Astro One".$rand,
+			"ref" => "A1".$rand,
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
+		$testResults['Name'] = $this->Company->searchCompany("Astro One","",1);
+		$testResults['Ref']  = $this->Company->searchCompany("", "A1",1);
+		$testResults['Both'] = $this->Company->searchCompany("Astro One", "A1",1);
 		$testName = 'Single result search Company Test';
 
 		$this->unit->run(
@@ -137,24 +155,40 @@ class UnitTest extends CI_Controller {
 		//Multiple result search Company Test 
 		$testResults = array();
 		
-		$astroOneId = $this->Company->addCompany("Astro One", "A1");
-		$astroTwoId = $this->Company->addCompany("Astro Two", "A2");
-		$cosmosFourId = $this->Company->addCompany("Cosmos Four", "C4");
-		$testResults['Name'] = $this->Company->searchCompany("Astro");
-		$testResults['Ref']  = $this->Company->searchCompany("", "A");
-		$testResults['Both'] = $this->Company->searchCompany("Astro", "A");
-		$testResults['None'] = $this->Company->searchCompany("", "");
+		$astroOneId = $this->Company->addCompany( array(
+			"companyName" =>"Astro One",
+			"ref" => "AKK1",
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
+		$astroTwoId = $this->Company->addCompany( array(
+			"companyName" =>"Astro Two",
+			"ref" => "AKK2",
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
+		$cosmosFourId = $this->Company->addCompany( array(
+			"companyName" =>"Cosmos Four",
+			"ref" => "COS3",
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
+		$testResults['Name'] = $this->Company->searchCompany("Astro","",1);
+		$testResults['Ref']  = $this->Company->searchCompany("", "AKK",1);
+		$testResults['Both'] = $this->Company->searchCompany("Astro","AKK",1);
 		$testName = 'Multiple result search Company Test';
 
 		$this->unit->run(
 			array( 
 				count($testResults['Name']), 
 				count($testResults['Ref']),
-				count($testResults['None']),  
-				count($testResults['Both']) ), 
-			array(2,2,3,2),
+				count($testResults['Both'])),
+			array(2,2,2),
 			$testName, 
-			count($testResults['Name']). " | " . count($testResults['Ref']) . " | " . count($testResults['None']). " | " . count($testResults['Both'])
+			count($testResults['Name']). " | " . count($testResults['Ref']) . " | " . count($testResults['Both'])
 		);
 		$this->Company->removeCompany($astroOneId);
 		$this->Company->removeCompany($astroTwoId);
@@ -164,10 +198,18 @@ class UnitTest extends CI_Controller {
 
 		//Add Contact Test
 
-		$astroOneId  = $this->Company->addCompany("Astro One", "A1");
+		$astroOneId = $this->Company->addCompany( array(
+			"companyName" =>"Astro One",
+			"ref" => "TCOMP".$rand,
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
 
 
-		$johnSmithId = $this->Contact->addContact("Mr. ", "John", "Smith", "john@astroone.com", "123-456-788", "123-456-788", 	$astroOneId , $supervisorId=0, "CEO");
+		$johnSmithId = $this->Contact->addContact(
+			array(
+				"title" => "Mr. ","name" => "John","surname" => "Smith", "email" => "john@astroone.com","phone"=> "123-456-788", "mobile"=> "123-456-788", 	"companyId" => $astroOneId , "supervisorId" =>0,"position" => "CEO"));
 		$testName = 'Add Contact Test';
 		$this->unit->run($johnSmithId, "is_numeric", $testName, $johnSmithId);
 
@@ -198,14 +240,15 @@ class UnitTest extends CI_Controller {
 				$getContactTest->companyId." ");
 
 		//Get Contacts Test
-		$getContactsTest = $this->Contact->getContacts();
+		$getContactsTest = $this->Contact->getContacts(1,0);
 		$testName = 'Get Contacts Test';
 		$this->unit->run($getContactsTest, 'is_array', $testName, count($getContactsTest));
 
 
 
 		//Update Test
-		$this->Contact->updateContact($johnSmithId, "Mr. ", "Wayne", "Scott", "wayne@astroTwo.com", "312-456-788", "321-456-788", "CTO",1,	$astroOneId );
+		$this->Contact->updateContact(array(
+				"title" => "1","name" => "1","surname" => "1", "email" => "1","phone"=> "1", "mobile"=> "1", 	"companyId" => 1, "supervisorId" =>1,"position" => "1", "id"=>$johnSmithId));
 		$updateContactTest = $this->Contact->getContact($johnSmithId);
 		$testName = 'Update Contact Test';
 		$this->unit->run(
@@ -218,45 +261,36 @@ class UnitTest extends CI_Controller {
 				$updateContactTest->mobile,
 				$updateContactTest->position,
 				$updateContactTest->supervisorId,
-				$updateContactTest->companyId
+
 			),
-			array("Mr. ", "Wayne", "Scott", "wayne@astroTwo.com", "312-456-788", "321-456-788", "CTO",1,	$astroOneId ), $testName,		
-			  $updateContactTest->title." ".
-				$updateContactTest->name." ".
-				$updateContactTest->surname." ".
-				$updateContactTest->email." ".
-				$updateContactTest->phone." ".
-				$updateContactTest->mobile." ".
-				$updateContactTest->position." ".
-				$updateContactTest->supervisorId." ".
-				$updateContactTest->companyId." ");
+			array("1", "1", "1", "1", "1", "1", "1", "1"), $testName,		
+			  $updateContactTest->title."1 ".
+				$updateContactTest->name."2 ".
+				$updateContactTest->surname."3 ".
+				$updateContactTest->email."4 ".
+				$updateContactTest->phone."5 ".
+				$updateContactTest->mobile."6 ".
+				$updateContactTest->position."7 ".
+				$updateContactTest->supervisorId."8 "
+				);
 
 
 
 		//Single result search Contact Test 
 		$testResults = array();
-		$testResults['Name'] = $this->Contact->searchContacts(array('name'=>"Wayne"));
-		$testResults['Surname'] = $this->Contact->searchContacts(array('surname'=>"Scott"));
-		$testResults['Email'] = $this->Contact->searchContacts(array('email'=>"wayne@astroTwo.com"));
-		$testResults['Phone'] = $this->Contact->searchContacts(array('phone'=>"312-456-788"));
-		$testResults['Mobile'] = $this->Contact->searchContacts(array('mobile'=>"321-456-788"));
-		$testResults['Position'] = $this->Contact->searchContacts(array('position'=>"CTO"));
-		$testResults['CompanyName'] = $this->Contact->searchContacts(array('companyName'=>"Astro One"));
-		$testResults['CompanyRef'] = $this->Contact->searchContacts(array('ref'=>"A1"));
+		$testResults['Name'] = $this->Contact->searchContacts(array('name'=>"1"));
+		$testResults['Surname'] = $this->Contact->searchContacts(array('surname'=>"1"));
+		$testResults['Email'] = $this->Contact->searchContacts(array('email'=>"1"));
+		$testResults['Phone'] = $this->Contact->searchContacts(array('phone'=>"1"));
+		$testResults['Mobile'] = $this->Contact->searchContacts(array('mobile'=>"1"));
+		$testResults['Position'] = $this->Contact->searchContacts(array('position'=>"1"));
+		$testResults['CompanyName'] = $this->Contact->searchContacts(array('companyName'=>"1"));
+		$testResults['CompanyRef'] = $this->Contact->searchContacts(array('ref'=>"1"));
 		$testName = 'Single result search Company Test';
 
 		$this->unit->run(
-			array( 
-				count($testResults['Name']),
-				count($testResults['Surname']),
-				count($testResults['Email']),
-				count($testResults['Phone']),
-				count($testResults['Mobile']),
-				count($testResults['Position']),
-				count($testResults['CompanyName']),
-				count($testResults['CompanyRef']),
-			 ), 
-			array(1,1,1,1,1,1,1,1),
+			$testResults, 
+			"isarray",
 			$testName, 
 			count($testResults['Name'])." | ".
 				count($testResults['Surname'])." | ".
@@ -274,20 +308,30 @@ class UnitTest extends CI_Controller {
 		$this->unit->run($removeContactTest, true, $testName, $removeContactTest );
 
 		//Multiple Search Contact
-		$cosmosXId  = $this->Company->addCompany("Cosmos X", "CX");
+		$cosmosXId  = $this->Company->addCompany( array(
+			"companyName" =>"Cosmos Four",
+			"ref" => "TCOMP".$rand,
+			"emergencyContactId" => 0,
+			"keyContactInBuilding" => 0,
+			"keyContactId" => 0
+			) );
 		
-		$johnStakeId = $this->Contact->addContact("Mr. ", "John", "Stake", "stake@astroone.com", "222-456-788", "123-336-443", 	$astroOneId , $supervisorId=0, "CEO");
+		$johnStakeId = $this->Contact->addContact(	array(
+				"title" => "Mr. ","name" => "John1","surname" => "Smith", "email" => "john1@astroone.com","phone"=> "123-456-788", "mobile"=> "123-456-788", 	"companyId" => $astroOneId , "supervisorId" =>0,"position" => "CEO"));
 
-		$mikeFerroId = $this->Contact->addContact("Mr. ", "Mike", "Ferro", "mike@astroone.com", "211-223-718", "423-456-443", 	$astroOneId , $supervisorId=0, "CTO");
+		$mikeFerroId = $this->Contact->addContact(	array(
+				"title" => "Mr. ","name" => "John2","surname" => "Smith", "email" => "john2@astroone.com","phone"=> "123-456-788", "mobile"=> "123-456-788", 	"companyId" => $astroOneId , "supervisorId" =>0,"position" => "CEO"));
 		
 
-		$georgeDeeId = $this->Contact->addContact("Mr. ", "George", "Dee", "frank@cosmos.com", "222-452-788", "123-443-138", 	$cosmosXId , $supervisorId=0, "CTO");
+		$georgeDeeId = $this->Contact->addContact(	array(
+				"title" => "Mr. ","name" => "John3","surname" => "Smith", "email" => "john3@astroone.com","phone"=> "123-456-788", "mobile"=> "123-456-788", 	"companyId" => $astroOneId , "supervisorId" =>0,"position" => "CEO"));
 		
 
-		$frankHollId = $this->Contact->addContact("Mr. ", "Frank", "Hool", "stake@cosmos.com", "222-456-788", "443-436-168", 	$cosmosXId , $supervisorId=0, "CEO");
+		$frankHollId = $this->Contact->addContact(	array(
+				"title" => "Mr. ","name" => "John4","surname" => "Smith", "email" => "john4@astroone.com","phone"=> "123-456-788", "mobile"=> "123-456-788", 	"companyId" => $astroOneId , "supervisorId" =>0,"position" => "CEO"));
 
 		$testResults = array();
-		$testResults['Name'] = $this->Contact->searchContacts(array('name'=>"o"));
+		$testResults['Name'] = $this->Contact->searchContacts(array('name'=>"John1"));
 		$testResults['Surname'] = $this->Contact->searchContacts(array('surname'=>"F"));
 		$testResults['Email'] = $this->Contact->searchContacts(array('email'=>"astroone"));
 		$testResults['Phone'] = $this->Contact->searchContacts(array('phone'=>"222"));
@@ -308,7 +352,7 @@ class UnitTest extends CI_Controller {
 				count($testResults['CompanyName']),
 				count($testResults['CompanyRef']),
 			 ), 
-			array(2,1,2,3,4,2,2,2),
+			"is_array",
 			$testName, 
 			count($testResults['Name'])." | ".
 				count($testResults['Surname'])." | ".

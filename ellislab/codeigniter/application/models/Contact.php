@@ -9,6 +9,7 @@ class Contact extends CI_Model
   public $phone;
   public $mobile;
   public $position;
+  public $notes;
   public $companyId;
   public $supervisorId;
 
@@ -24,19 +25,10 @@ class Contact extends CI_Model
      * @return int
      */
     
-    public function addContact($title, $name, $surname, $email, $phone, $mobile, $companyId, $supervisorId=0, $position)
+    public function addContact($data)
     {
-      $this->title          = $title;
-      $this->name           = $name;
-      $this->surname        = $surname;
-      $this->email          = $email;
-      $this->phone          = $phone;
-      $this->mobile         = $mobile;
-      $this->companyId      = $companyId;
-      $this->supervisorId   = $supervisorId;
-      $this->position       = $position;
     
-      $result = $this->db->insert("Contacts", $this);
+      $result = $this->db->insert("Contacts", $data);
       if(!$result){
         $result = "Error - duplicate entry"; 
       }else{
@@ -67,9 +59,11 @@ class Contact extends CI_Model
      * Returns all contacts
      * @return array
     */
-    public function getContacts()
+    public function getContacts($page, $limit=25)
     {
-      $query = $this->db->get('Contacts');
+       $this->db->select("Contacts.id as id, Contacts.name, Contacts.title, Contacts.surname,Contacts.email,Contacts.phone,Contacts.mobile,Contacts.position,Contacts.notes,Companies.companyName,Companies.ref, Companies.id as companyId");
+      $this->db->join('Companies', 'Contacts.companyId = Companies.id', 'left');
+      $query = $this->db->get('Contacts',$limit, (($page-1)*25));
       $result = $query->result();
       if(is_array($result)){
         return $result;
@@ -84,62 +78,30 @@ class Contact extends CI_Model
     */
     public function getContact($id)
     {
-      $query = $this->db->get_where('Contacts', array("id" => $id));
+       $this->db->select("Contacts.id as id, Contacts.name, Contacts.title, Contacts.surname,Contacts.email,Contacts.phone,Contacts.mobile,Contacts.position,Contacts.notes,Contacts.supervisorId,Companies.companyName,Companies.ref, Companies.id as companyId");
+      $this->db->join('Companies', 'Contacts.companyId = Companies.id', 'left');
+      $query = $this->db->get_where('Contacts', array("Contacts.id" => $id));
+
       $result = $query->result();
-      if(is_array($result)){
+       if( (is_array($result) && ( count($result) >0 ) ) ) {
         return $result[0];
       }
       return false;
     }
 
-    public function updateContact(
-      $id,
-      $title=false,
-      $name=false,
-      $surname=false,
-      $email=false,
-      $phone=false,
-      $mobile=false,
-      $position=false,
-      $supervisorId=false,
-      $companyId=false)
-    {
-      if($title){
-        $this->title = $title;                
-      }
-      if($name){
-        $this->name = $name;                
-      }
-      if($surname){
-        $this->surname = $surname;                
-      }
-      if($email){
-        $this->email = $email;                
-      }
-      if($phone){
-        $this->phone = $phone;                
-      }
-      if($mobile){
-        $this->mobile = $mobile;                
-      }
-      if($position){
-        $this->position = $position;                
-      }
-      if($supervisorId){
-        $this->supervisorId = $supervisorId;                
-      }
-      if($companyId){
-        $this->companyId = $companyId;                
-      }
+    public function updateContact($data){
 
-      $this->db->where("id",$id);
-      
-      return $this->db->update('Contacts', $this);
+      $this->db->where("id", $data['id']);
+      $this->db->update('Contacts', $data);
+
     }
 
-    //('name'=>"",$surname="",$email="",$phone="",$mobile="",$position="",$companyName = "",$ref=""
-    public function searchContacts($data){   
-        $this->db->join('Companies', 'Contacts.companyId = Companies.id', 'left');
+
+    public function searchContacts($data,$limit=25){   
+
+      $this->db->select("Contacts.id as id, Contacts.name, Contacts.title, Contacts.surname,Contacts.email,Contacts.phone,Contacts.mobile,Contacts.position,Contacts.notes,Companies.companyName,Companies.ref, Companies.id as companyId");
+
+      $this->db->join('Companies', 'Companies.id=companyId',"left");
       if(isset($data['name']))
         $this->db->like('Contacts.name', $data['name']);
       if(isset($data['surname']))
@@ -152,12 +114,18 @@ class Contact extends CI_Model
         $this->db->like('Contacts.mobile', $data['mobile']);
       if(isset($data['position']))
         $this->db->like('Contacts.position', $data['position']);
+      if(isset($data['notes']))
+        $this->db->like('Contacts.notes', $data['notes']);
       if(isset($data['companyName']))
         $this->db->like('Companies.companyName', $data['companyName']);
       if(isset($data['ref']))
         $this->db->like('Companies.ref', $data['ref']);
-      $query = $this->db->get("Contacts");
-  
+      if(isset($data['companyId']))
+        $this->db->like('Companies.id', $data['companyId']);
+      
+      $this->db->limit($limit, (($data['page']-1)*25) );
+      $query =  $this->db->get("Contacts");
+      error_log($this->db->last_query());
       $result = $query->result();
       return $result;
     }

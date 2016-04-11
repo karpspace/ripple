@@ -1,4 +1,4 @@
-<?php
+ <?php
 class User extends CI_Model
 {
 
@@ -67,20 +67,21 @@ class User extends CI_Model
      * @return int
      */
     
-    public function addUser($email, $password, $name, $surname)
+    public function addUser($data)
     {
-      $this->email   = $email;
-      $this->name    = $name;
-      $this->surname = $surname;
-      $this->salt     = hash("sha256", $this->randomSeed());
-      $this->password = hash("sha256", $password . $this->salt);
-      $result = $this->db->insert("Users", $this);
-      if(empty($result)){
-        $result = "Duplicate email";
-      }else{
+      if ( 
+       (isset($data['name']))    ||
+       (isset($data['surname'])) ||
+       (isset($data['email']))   ||
+       (isset($data['password']))
+       ){
+        $data['salt']     = hash("sha256", $this->randomSeed());
+        $data['password'] = hash("sha256", $data['password']. $data['salt']);
+
+        $this->db->insert("Users", $data);
         $result = $this->db->insert_id();
-      }
-      return $result;
+        return $result;
+      }   
     }
     
     /**
@@ -103,12 +104,12 @@ class User extends CI_Model
      * Returns all users
      * @return object
     */
-    public function getUsers()
+    public function getUsers($page,$limit=25)
     {
-      $query = $this->db->get('Users');
+      $query = $this->db->get('Users',$limit, (($page-1)*25));
       $result = $query->result();
       if(is_array($result)){
-        return $result[0];
+        return $result;
       }
       return false;
     }
@@ -135,25 +136,15 @@ class User extends CI_Model
      * Updates user based on ID
      * @return boolean
      */
-    public function updateUser($id, $email=false, $name=false, $surname=false, $password=false, $active=false)
+    public function updateUser($data)
     {
-      if($name){
-        $this->name = $name;                
+
+      if(isset($data['password'])){
+        $data['salt']     = hash("sha256", $this->randomSeed());
+        $data['password'] = hash("sha256", $data['password'] . $data['salt']);              
       }
 
-      if($surname){
-        $this->surname = $surname;                
-      }
-
-      if($password){
-        $this->salt     = hash("sha256", $this->randomSeed());
-        $this->password = hash("sha256", $password . $this->salt);              
-      }
-
-      if($active){
-        $this->active = $active;                
-      }
-      $this->db->where("id",$id);
-      return $this->db->update('Users', $this);
+      $this->db->where("id",$data['id']);
+      return $this->db->update('Users', $data);
     }    
   }

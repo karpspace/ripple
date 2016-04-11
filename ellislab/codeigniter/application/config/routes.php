@@ -51,6 +51,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 $route['test'] = 'UnitTest/index';
-$route['default_controller'] = 'main';
+
+$route['generate/(:any)'] = 'Generate/$1';
+$route['authenticate'] = 'Main/authenticate';
+$route['logout'] = 'Main/logout';
+$route['loginFail'] = 'Main/login/fail';
+$route['login'] = 'Main/login';
+$route['allCompanies'] = 'Main/allCompanies/1';
+$route['allCompanies/(:any)'] = 'Main/allCompanies/$1';
+$route['allContacts'] = 'Main/allContacts/1';
+$route['allContacts/(:any)'] = 'Main/allContacts/$1';
+$route['allUsers'] = 'Main/allUsers/1';
+$route['allUsers/(:any)'] = 'Main/allUsers/$1';
+$route['editUser/(:any)'] = 'Main/editUser/$1';
+$route['removeUser/(:any)'] = 'Main/removeUser/$1';
+$route['updateUser/(:any)'] = 'Main/updateUser/$1';
+$route['addUser'] = 'Main/addUser';
+$route['addUserExecute'] = 'Main/addUserExecute';
+$route['activateUser/(:num)'] = 'Main/activateUser/$1';
+$route['deactivateUser/(:num)'] = 'Main/deactivateUser/$1';
+
+$route['searchCompaniesAjax'] = 'Main/searchCompaniesAjax';
+$route['searchContactsAjax'] = 'Main/searchContactsAjax';
+$route['editCompany/(:num)'] = 'Main/editCompany/$1';
+$route['removeCompany/(:num)'] = 'Main/removeCompany/$1';
+
+$route['updateCompany/(:num)'] = 'Main/updateCompany/$1';
+$route['editContact/(:num)'] = 'Main/editContact/$1';
+$route['updateContact/(:num)'] = 'Main/updateContact/$1';
+$route['removeContact/(:num)'] = 'Main/removeContact/$1';
+$route['default_controller'] = 'Main/login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
