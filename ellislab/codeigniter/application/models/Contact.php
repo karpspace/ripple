@@ -102,6 +102,8 @@ class Contact extends CI_Model
       $this->db->select("Contacts.id as id, Contacts.name, Contacts.title, Contacts.surname,Contacts.email,Contacts.phone,Contacts.mobile,Contacts.position,Contacts.notes,Companies.companyName,Companies.ref, Companies.id as companyId");
 
       $this->db->join('Companies', 'Companies.id=companyId',"left");
+      if(!isset($data['page']))
+        $data['page'] =1;
       if(isset($data['name']))
         $this->db->like('Contacts.name', $data['name']);
       if(isset($data['surname']))

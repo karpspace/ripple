@@ -2,7 +2,7 @@
 <?php echo form_open("authenticate")?>
 	<div class="row">
 			<div class="small-3 small-centered columns">
-				<div class="window">
+				<div class="login">
 				<h2>Company Directory</h2>
 					<label>email
 						<input type="text" name="email" placeholder="">

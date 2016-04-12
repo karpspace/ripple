@@ -14,9 +14,7 @@
 
 		?>
 	</div>
-
-
-</div>
+</div><br>
 <div class="row">
 	<div class="small-8 small-centered columns companies ">
 		<table>
